@@ -1,8 +1,5 @@
 # The input Makefile for the main pidgin-psd
 
-# The plugin directory.
-libdir			=	$(PIDGIN_LIBDIR)/pidgin
-
 # The plugin library.
 lib_LTLIBRARIES		=	pidgin-osd.la
 

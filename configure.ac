@@ -1,6 +1,9 @@
 # The autoconf initilization.
 AC_INIT(pidgin-osd, 0.1.0, [mbroemme@plusserver.de], [pidgin-osd])
 
+# Keep correct libtool macros in-tree.
+AC_CONFIG_MACRO_DIR([m4])
+
 # Detect the canonical host and target build environment
 AC_CANONICAL_SYSTEM
 
@@ -20,24 +23,29 @@ AC_PROG_LIBTOOL
 AC_PROG_MAKE_SET
 AC_PROG_CC
 
+# Checking for purple.
+PKG_CHECK_MODULES([PURPLE], [purple >= 2.0.0])
+
+# Checking for purple flags.
+AC_SUBST(PURPLE_CFLAGS)
+AC_SUBST(PURPLE_LDFLAGS)
+
 # Checking for pidgin.
-PKG_CHECK_MODULES(PIDGIN, [pidgin >= 2.0.0], HAVE_PIDGIN="yes", HAVE_PIDGIN="no")
+PKG_CHECK_MODULES([PIDGIN], [pidgin >= 2.0.0])
 
 # Checking for pidgin flags.
 AC_SUBST(PIDGIN_CFLAGS)
 AC_SUBST(PIDGIN_LDFLAGS)
-PIDGIN_LIBDIR=`pkg-config --variable=libdir pidgin`
-AC_SUBST(PIDGIN_LIBDIR)
 
 # Checking for glib.
-PKG_CHECK_MODULES(GLIB, [glib-2.0], HAVE_GLIB="yes", HAVE_GLIB="no")
+PKG_CHECK_MODULES([GLIB], [glib-2.0])
 
 # Checking for glib flags.
 AC_SUBST(GLIB_CFLAGS)
 AC_SUBST(GLIB_LDFLAGS)
 
 # Checking for gtk.
-PKG_CHECK_MODULES(GTK, [gtk+-2.0], HAVE_GTK="yes", HAVE_GTK="no")
+PKG_CHECK_MODULES([GTK], [gtk+-2.0])
 
 # Checking for gtk flags.
 AC_SUBST(GTK_CFLAGS)
