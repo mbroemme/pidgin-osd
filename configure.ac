@@ -1,5 +1,5 @@
 # The autoconf initilization.
-AC_INIT(pidgin-osd, 0.1.0, [mbroemme@plusserver.de], [pidgin-osd])
+AC_INIT(pidgin-osd, 0.1.0, [mbroemme@libmpq.org], [pidgin-osd])
 
 # Keep correct libtool macros in-tree.
 AC_CONFIG_MACRO_DIR([m4])
