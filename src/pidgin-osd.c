@@ -559,7 +559,7 @@ static GtkWidget *osd_get_config_frame(PurplePlugin *plugin) {
 	/* show incoming messages on osd */
 	g_osd_msgs = gtk_check_button_new_with_label("Show incoming messages");
 	gtk_table_attach(GTK_TABLE(table), g_osd_msgs, 0, 3, 9, 10, opts, opts, 3, 3);
-	gtk_tooltips_set_tip(GTK_TOOLTIPS(g_tooltips), g_osd_msgs, "If on will also show the incomming messages as OSD notifications", "");
+	gtk_tooltips_set_tip(GTK_TOOLTIPS(g_tooltips), g_osd_msgs, "If on will show the incoming messages as OSD notifications", "");
 
 	g_osd_status_msgs = gtk_check_button_new_with_label("Show status messages");
 	gtk_table_attach(GTK_TABLE(table), g_osd_status_msgs, 0, 3, 10, 11, opts, opts, 3, 3);
