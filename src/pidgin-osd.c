@@ -53,6 +53,7 @@ GtkWidget	*g_osd_timeout		= NULL;
 GtkWidget	*g_osd_shadow		= NULL;
 GtkWidget	*g_osd_lines		= NULL;
 GtkWidget	*g_osd_msgs		= NULL;
+GtkWidget	*g_osd_status_msgs	= NULL;
 GtkTooltips	*g_tooltips		= NULL;
 
 
@@ -68,6 +69,7 @@ static int		osd_lines		= 1;
 static int		osd_xoffset		= 20;
 static int		osd_yoffset		= 20;
 static int		osd_msgs		= 0;
+static int		osd_status_msgs		= 0;
 
 /* the xosd information. */
 static PurplePlugin	*my_plugin		= NULL;
@@ -182,6 +184,7 @@ static void osd_init_prefs(void) {
 	purple_prefs_add_int("/plugins/gtk/X11/pidgin-osd/xoffset", osd_xoffset);
 	purple_prefs_add_int("/plugins/gtk/X11/pidgin-osd/yoffset", osd_yoffset);
 	purple_prefs_add_int("/plugins/gtk/X11/pidgin-osd/msgs", osd_msgs);
+	purple_prefs_add_int("/plugins/gtk/X11/pidgin-osd/status_msgs", osd_status_msgs);
 }
 
 /* this function gets the osd properties. */
@@ -197,6 +200,7 @@ static void osd_get_prefs(void) {
 	osd_xoffset	= purple_prefs_get_int("/plugins/gtk/X11/pidgin-osd/xoffset");
 	osd_yoffset	= purple_prefs_get_int("/plugins/gtk/X11/pidgin-osd/yoffset");
 	osd_msgs	= purple_prefs_get_int("/plugins/gtk/X11/pidgin-osd/msgs");
+	osd_status_msgs	= purple_prefs_get_int("/plugins/gtk/X11/pidgin-osd/status_msgs");
 }
 
 /* this function sets the osd font to use. */
@@ -293,6 +297,7 @@ void osd_set_prefs(void) {
 	purple_prefs_set_int("/plugins/gtk/X11/pidgin-osd/xoffset", osd_xoffset);
 	purple_prefs_set_int("/plugins/gtk/X11/pidgin-osd/yoffset", osd_yoffset);
 	purple_prefs_set_int("/plugins/gtk/X11/pidgin-osd/msgs", osd_msgs);
+	purple_prefs_set_int("/plugins/gtk/X11/pidgin-osd/status_msgs", osd_status_msgs);
 
 	/* check if another osd exist. */
 	if (osd) {
@@ -343,6 +348,7 @@ static void osd_set_values(GtkWidget *button, GtkWidget *data) {
 	osd_xoffset	= gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(g_osd_xoffset));
 	osd_yoffset	= gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(g_osd_yoffset));
 	osd_msgs	= gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(g_osd_msgs)) == TRUE ? 1 : 0;
+	osd_status_msgs	= gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(g_osd_status_msgs)) == TRUE ? 1 : 0;
 
 	/* save the configuration values */
 	osd_set_prefs();
@@ -445,6 +451,9 @@ static void osd_read_values() {
 
 	/* get the osd active status. */
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(g_osd_msgs), osd_msgs != 0 ? TRUE : FALSE);
+
+	/* get the osd status active status. */
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(g_osd_status_msgs), osd_status_msgs != 0 ? TRUE : FALSE);
 }
 
 /* this function shows the configuration window. */
@@ -471,7 +480,7 @@ static GtkWidget *osd_get_config_frame(PurplePlugin *plugin) {
 	vbox = gtk_vbox_new(FALSE, 5);
 	gtk_container_add(GTK_CONTAINER(frame), vbox);
 
-	table = gtk_table_new (9, 3, FALSE);
+	table = gtk_table_new (10, 3, FALSE);
 	gtk_box_pack_start(GTK_BOX(vbox), table, FALSE, FALSE, 5);
 
 	/* font properties */
@@ -552,6 +561,10 @@ static GtkWidget *osd_get_config_frame(PurplePlugin *plugin) {
 	gtk_table_attach(GTK_TABLE(table), g_osd_msgs, 0, 3, 9, 10, opts, opts, 3, 3);
 	gtk_tooltips_set_tip(GTK_TOOLTIPS(g_tooltips), g_osd_msgs, "If on will also show the incomming messages as OSD notifications", "");
 
+	g_osd_status_msgs = gtk_check_button_new_with_label("Show status messages");
+	gtk_table_attach(GTK_TABLE(table), g_osd_status_msgs, 0, 3, 10, 11, opts, opts, 3, 3);
+	gtk_tooltips_set_tip(GTK_TOOLTIPS(g_tooltips), g_osd_status_msgs, "If on will show buddy status updates as OSD notifications", "");
+
 	/* save settings */
 	button = gtk_button_new_with_mnemonic("_Set");
 	gtk_box_pack_start(GTK_BOX(vbox), button, FALSE, FALSE, 5);
@@ -597,32 +610,38 @@ static void osd_notify_txt(const char *format, ...) {
 
 /* osd notification for away. */
 static void buddy_away_cb(PurpleBuddy *buddy, void *data) {
-	osd_notify(buddy, "is away");
+	if (osd_status_msgs != 0)
+		osd_notify(buddy, "is away");
 }
 
 /* osd notification for back. */
 static void buddy_back_cb(PurpleBuddy *buddy, void *data) {
-	osd_notify(buddy, "is back");
+	if (osd_status_msgs != 0)
+		osd_notify(buddy, "is back");
 }
 
 /* osd notification for idle. */
 static void buddy_idle_cb(PurpleBuddy *buddy, void *data) {
-	osd_notify(buddy, "is idle");
+	if (osd_status_msgs != 0)
+		osd_notify(buddy, "is idle");
 }
 
 /* osd notification for unidle. */
 static void buddy_unidle_cb(PurpleBuddy *buddy, void *data) {
-	osd_notify(buddy, "is not idle");
+	if (osd_status_msgs != 0)
+		osd_notify(buddy, "is not idle");
 }
 
 /* osd notification for signed on. */
 static void buddy_signed_on_cb(PurpleBuddy *buddy, void *data) {
-	osd_notify(buddy, "signed on");
+	if (osd_status_msgs != 0)
+		osd_notify(buddy, "signed on");
 }
 
 /* osd notification for signed off. */
 static void buddy_signed_off_cb(PurpleBuddy *buddy, void *data) {
-	osd_notify(buddy, "signed off");
+	if (osd_status_msgs != 0)
+		osd_notify(buddy, "signed off");
 }
 
 /* osd notification for incoming message. */
