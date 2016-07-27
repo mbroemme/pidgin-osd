@@ -727,6 +727,7 @@ static void init_plugin(PurplePlugin *plugin) {
 	/* some initlization function for the configuration window */
 	osd_fill_fonts();
 	osd_init_prefs();
+	osd_get_prefs();
 }
 
 PURPLE_INIT_PLUGIN(pidgin-osd, init_plugin, info);
